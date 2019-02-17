@@ -27,8 +27,7 @@ func playfreq(s *pulse.Stream, ss *pulse.SampleSpec, f int) {
   data := make([]byte, 4*ss.Rate)
   r := float64(ss.Rate)
   for i := 0; i < 44100; i++ {
-    sample := float32((math.Sin(tau*float64(f*i)/r) / 3.0))// * math.Sin((math.Pi)*float64(i)/r)
-    //)
+    sample := float32((math.Sin(tau*float64(f*i)/r) / 3.0)  * float64(i)/(r/2))
     bits := math.Float32bits(sample)
 		binary.LittleEndian.PutUint32(data[4*i:4*i+4], bits)
   }
