@@ -9,9 +9,13 @@ import (
   "os"
 )
 
+const sample_rate uint32 = 44100;
+const tau float64 = 2 * math.Pi;
+
 func main() {
-  f, _ := strconv.Atoi(os.Args[1])
-	ss := pulse.SampleSpec{pulse.SAMPLE_FLOAT32LE, 44100, 1}
+  f_in, _ := strconv.Atoi(os.Args[1])
+  f := uint32(f_in)
+  ss := pulse.SampleSpec{pulse.SAMPLE_S16LE, sample_rate, 2}
 	pb, err := pulse.Playback("pulse-simple test", "playback test", &ss)
 	defer pb.Free()
 	defer pb.Drain()
@@ -22,37 +26,24 @@ func main() {
 	playfreq(pb, &ss, f)
 }
 
-func playfreq(s *pulse.Stream, ss *pulse.SampleSpec, f int) {
-  tau := 2 * math.Pi
-  data := make([]byte, 8*ss.Rate)
-  r := float64(ss.Rate)
-  for i := 0; i < 2*int(ss.Rate); i++ {
-    sample := float32((math.Sin(tau*float64(f*i)/r) / 3.0)  * float64(i)/(r))
-    bits := math.Float32bits(sample)
-		binary.LittleEndian.PutUint32(data[4*i:4*i+4], bits)
-  }
-  s.Write(data)
-  for i := 0; i < 2 * int(ss.Rate); i++ {
-    //sawtooth wav
-    sample := float32(i % (44100/150)) * 0.0001
-    //sample := float32(math.Sin(tau*float64(f*i)/r))
-    bits := math.Float32bits(sample)
-		binary.LittleEndian.PutUint32(data[4*i:4*i+4], bits)
-  }
-  s.Write(data)
-  s.Write(data)
-  for i := 0; i < 2 * int(ss.Rate); i++ {
-    //sawtooth wav
-    sample := float32(i % (44100/180)) * 0.0001
-    //sample := float32(math.Sin(tau*float64(f*i)/r))
-    bits := math.Float32bits(sample)
-		binary.LittleEndian.PutUint32(data[4*i:4*i+4], bits)
+func playfreq(s *pulse.Stream, ss *pulse.SampleSpec, f uint32) {
+  data := make([]byte, 2*44100)
+  var i uint32;
+  for i = 0; i < 44100; i++ {
+    bits := sinewave(f, i)
+    //bits := sawtooth(f, i)
+		binary.LittleEndian.PutUint16(data[2*i:2*i+2], bits)
   }
   s.Write(data)
 }
 
-func time2sample (t int){
-
+func sinewave (freq uint32, phase uint32) uint16{
+  sample := math.Sin(tau*float64(freq*phase)/float64(sample_rate))
+  return uint16(sample * 32000);
 }
 
-
+func sawtooth (freq uint32, phase uint32) uint16{
+  //TODO fix this
+  sample := ((phase % (sample_rate/freq))/(sample_rate/(2*freq)) - 1);
+  return uint16(sample * 32000);
+}
