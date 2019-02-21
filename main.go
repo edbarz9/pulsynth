@@ -30,14 +30,14 @@ func main() {
   //f := uint32(f_in);
   f := n2hz(note)
   ss := pulse.SampleSpec{pulse.SAMPLE_S16LE, sample_rate, 2};
-	pb, err := pulse.Playback("pulse-simple test", "playback test", &ss);
-	defer pb.Free();
-	defer pb.Drain();
+	strm, err := pulse.Playback("pulsynth stream", "stream", &ss);
+	defer strm.Free();
+	defer strm.Drain();
 	if err != nil {
 		fmt.Printf("Could not create playback stream: %s\n", err);
 		return;
 	}
-	playfreq(pb, &ss, f);
+	playfreq(strm, &ss, f);
 }
 
 func playfreq(s *pulse.Stream, ss *pulse.SampleSpec, f uint32) {
