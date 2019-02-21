@@ -17,7 +17,8 @@ var octave float64 = math.Log10(100) - math.Log10(50);
 var base float64 = math.Log10(25);
 var edo uint16;
 var intr float64;
-
+var doplot bool = false;
+var plotlist []uint16;
 
 func init() {
   edo = 12
@@ -41,17 +42,17 @@ func main() {
 
 func playfreq(s *pulse.Stream, ss *pulse.SampleSpec, f uint32) {
   data := make([]byte, 2*44100);
-  plot := make([]uint16, 44100);
+  if doplot {plotlist = make([]uint16, 44100)}
   var i uint32;
   for i = 0; i < 44100; i++ {
     //bits := sinewave(f, i);
     //bits := sawtooth(f, i);
     bits := triangle(f, i);
-    plot[i] = bits;
+    if doplot {plotlist[i] = bits}
 		binary.LittleEndian.PutUint16(data[2*i:2*i+2], bits);
   }
   s.Write(data);
-  int2plot(plot);
+  if doplot {int2plot(plotlist)}
 }
 
 func sinewave (freq uint32, phase uint32) uint16{
