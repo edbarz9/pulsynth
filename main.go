@@ -15,11 +15,13 @@ const sample_rate uint32 = 44100;
 const tau float64 = 2 * math.Pi;
 var octave float64 = math.Log10(100) - math.Log10(50);
 var base float64 = math.Log10(25);
-var intr float64 = octave / 12;
+var edo uint16;
+var intr float64;
 
-func n2hz (note int) uint32 {
-  freq := math.Pow(10, float64(note) * intr + base);
-  return uint32(freq);
+
+func init() {
+  edo = 12
+  intr = octave / float64(edo)
 }
 
 func main() {
@@ -99,6 +101,7 @@ func int2plot(intbuff []uint16) {
   f.Close();
 }
 
-
-
-
+func n2hz (note int) uint32 {
+  freq := math.Pow(10, float64(note) * intr + base);
+  return uint32(freq);
+}
