@@ -17,7 +17,7 @@ var octave float64 = math.Log10(100) - math.Log10(50);
 var base float64 = math.Log10(25);
 var edo uint16;
 var intr float64;
-var doplot bool = false;
+var doplot bool = true;
 var plotlist []uint16;
 
 func init() {
@@ -73,7 +73,7 @@ func triangle (freq uint32, phase uint32) uint16{
   spo2 := float32(spo / 2);
   spo4 := float32(spo / 4);
   pspo := float32(phase % spo);
-  if pspo <= spo2 {
+  if pspo < spo2 - 1 {
     sample = (pspo / spo4) - 1;
   } else {
     sample = 3 - (pspo / spo4);
