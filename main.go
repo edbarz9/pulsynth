@@ -25,9 +25,9 @@ func init() {
 }
 
 func main() {
-  f_in, _ := strconv.Atoi(os.Args[1]);
+  note, _ := strconv.Atoi(os.Args[1]);
   //f := uint32(f_in);
-  f := n2hz(f_in)
+  f := n2hz(note)
   ss := pulse.SampleSpec{pulse.SAMPLE_S16LE, sample_rate, 2};
 	pb, err := pulse.Playback("pulse-simple test", "playback test", &ss);
 	defer pb.Free();
