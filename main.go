@@ -30,8 +30,8 @@ func playfreq(s *pulse.Stream, ss *pulse.SampleSpec, f uint32) {
   data := make([]byte, 2*44100)
   var i uint32;
   for i = 0; i < 44100; i++ {
-    bits := sinewave(f, i)
-    //bits := sawtooth(f, i)
+    //bits := sinewave(f, i)
+    bits := sawtooth(f, i)
 		binary.LittleEndian.PutUint16(data[2*i:2*i+2], bits)
   }
   s.Write(data)
@@ -44,6 +44,8 @@ func sinewave (freq uint32, phase uint32) uint16{
 
 func sawtooth (freq uint32, phase uint32) uint16{
   //TODO fix this
-  sample := ((phase % (sample_rate/freq))/(sample_rate/(2*freq)) - 1);
+  //p := float32(phase)
+  srf := sample_rate/freq
+  sample := (float32(phase % srf)/float32(srf))-1;
   return uint16(sample * 32000);
 }
