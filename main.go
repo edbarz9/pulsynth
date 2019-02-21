@@ -13,10 +13,19 @@ import (
 
 const sample_rate uint32 = 44100;
 const tau float64 = 2 * math.Pi;
+var octave float64 = math.Log10(100) - math.Log10(50);
+var base float64 = math.Log10(25);
+var intr float64 = octave / 12;
+
+func n2hz (note int) uint32 {
+  freq := math.Pow(10, float64(note) * intr + base);
+  return uint32(freq);
+}
 
 func main() {
   f_in, _ := strconv.Atoi(os.Args[1]);
-  f := uint32(f_in);
+  //f := uint32(f_in);
+  f := n2hz(f_in)
   ss := pulse.SampleSpec{pulse.SAMPLE_S16LE, sample_rate, 2};
 	pb, err := pulse.Playback("pulse-simple test", "playback test", &ss);
 	defer pb.Free();
@@ -89,3 +98,7 @@ func int2plot(intbuff []uint16) {
   wt.WriteTo(f);
   f.Close();
 }
+
+
+
+
