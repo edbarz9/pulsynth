@@ -17,7 +17,7 @@ var octave float64 = math.Log10(100) - math.Log10(50);
 var base float64 = math.Log10(25);
 var edo uint16;
 var intr float64;
-var doplot bool = true;
+var doplot bool = false;
 var plotlist []uint16;
 
 func init() {
